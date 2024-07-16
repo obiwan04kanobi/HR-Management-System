@@ -4,9 +4,9 @@
 
 The **My Lava Employee Management System** is a web application designed to manage employee attendance, leave applications, and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap and jQuery for the frontend.
 
+
 ## 📺 Video Demo
-<video src="LINK" controls="controls" style="max-width: 730px;">
-</video>
+[Screencast from 16-07-24 04:57:02 PM IST.webm](https://github.com/user-attachments/assets/b083e879-245c-4cb0-8545-0f7e70110639)
 
 
 ## ✨ Features
