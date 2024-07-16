@@ -4,6 +4,11 @@
 
 The **My Lava Employee Management System** is a web application designed to manage employee attendance, leave applications, and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap and jQuery for the frontend.
 
+## 📺 Video Demo
+<video src="LINK" controls="controls" style="max-width: 730px;">
+</video>
+
+
 ## ✨ Features
 
 ### Employee Features
@@ -20,7 +25,7 @@ The **My Lava Employee Management System** is a web application designed to mana
 
 ---
 
-### 💻 Technologies Used 
+## 💻 Technologies Used 
 <div align="center">
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/192109061-e138ca71-337c-4019-8d42-4792fdaa7128.png" alt="Postman" title="Postman"/></code>
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/183898054-b3d693d4-dafb-4808-a509-bab54cf5de34.png" alt="Bootstrap" title="Bootstrap"/></code>
@@ -35,12 +40,12 @@ The **My Lava Employee Management System** is a web application designed to mana
 - **Database**: MySQL
 - **API Testing**: Postman
 
-## Installation
+## 📥 Installation
 
 1. **Clone the Repository**
    ```sh
    git clone https://github.com/obiwan04kanobi/HR-Management-System.git
-   cd HR-Management-System
+   cd HR-Management-System/WebApp
    ```
 
 2. **Install Dependencies**
@@ -63,7 +68,7 @@ The **My Lava Employee Management System** is a web application designed to mana
    php artisan serve
    ```
 
-## Usage
+## 📋 Usage
 
 ### Authentication
 

@@ -1,0 +1,13 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Make the image display behind the forms */
+    background-image: url('/images/blaze-curve.jpg');
+    background-size: cover;
+    height: 100%;
+    z-index: -1;
+}
