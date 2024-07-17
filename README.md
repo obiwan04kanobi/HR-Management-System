@@ -1,8 +1,8 @@
-# 💼 My Lava Employee Management System
+# 💼 MyLava Employee Management System
  
 ## 📜 Overview
 
-The **My Lava Employee Management System** is a web application designed to manage employee attendance, leave applications, and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap and jQuery for the frontend.
+The **MyLava Employee Management System** is a web application designed to manage employee attendance, leave applications, and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap and jQuery for the frontend.
 
 
 ## 📺 Video Demo
@@ -89,7 +89,7 @@ The **My Lava Employee Management System** is a web application designed to mana
 - Admins are determined based on the `report_to` attribute in the employees' data.
 - Only admins can access the "Admin Attendance" and "Approve Leave" sections.
 
-## Contributing
+## 🫂 Contributing
 
 We welcome contributions from the community. Please follow these steps to contribute:
 
