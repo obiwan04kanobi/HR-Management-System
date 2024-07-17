@@ -12,10 +12,14 @@ class Attendance_Master extends Model
 
     protected $table = 'attendance_masters';
 
+    protected $primaryKey = 'attendance_id';
+
     protected $fillable = [
         'employee_id',
         'punch_in',
         'punch_out',
-        'date'
+        'date',
+        'message',
+        'message_status'
     ];
 }

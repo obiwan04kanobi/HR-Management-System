@@ -53,6 +53,9 @@ class AttendanceController extends Controller
                 'date' => $attendance->date,
                 'leave_type' => $leaveType,
                 'report_to' => $reportTo,
+                'attendance_id' => $attendance->attendance_id,
+                'message' => $attendance->message,
+                'message_status' => $attendance->message_status,
             ];
         });
 
@@ -100,5 +103,63 @@ class AttendanceController extends Controller
         else {
             return 'Absent';
         }
+    }
+
+    public function sendMessage(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'attendance_id' => 'required|exists:attendance_masters,attendance_id', // Correct table name
+            'message_status' => 'required|boolean', // Correct table name
+            'message' => 'required|string|max:255',
+        ]);
+    
+        try {
+            // Find the attendance record
+            $attendance = Attendance::findOrFail($request->attendance_id); // Correct model name
+    
+            // Update the message
+            $attendance->message = $request->message;
+            $attendance->message_status = $request->message_status;
+            $attendance->save();
+    
+            return response()->json(['status' => 200, 'message' => 'Message sent successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 500, 'message' => 'Failed to send message.', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function updateMessageStatus(Request $request)
+    {
+        $attendanceId = $request->input('attendance_id');
+        $messageStatus = $request->input('message_status');
+
+        // Find the attendance record and update the message status
+        $attendance = Attendance::find($attendanceId);
+
+        if ($attendance) {
+            $attendance->message_status = $messageStatus;
+            $attendance->save();
+
+            return response()->json(['status' => 200, 'message' => 'Message status updated successfully']);
+        } else {
+            return response()->json(['status' => 404, 'message' => 'Attendance record not found']);
+        }
+    }
+
+    public function clearMessages(Request $request)
+    {
+        $employeeId = $request->input('employee_id');
+
+        // Find all attendance records for the employee and clear the messages
+        $attendances = Attendance::where('employee_id', $employeeId)->get();
+
+        foreach ($attendances as $attendance) {
+            $attendance->message = null; // Clear the message
+            $attendance->message_status = 0; // Mark message status as read
+            $attendance->save();
+        }
+
+        return response()->json(['status' => 200, 'message' => 'Messages cleared successfully']);
     }
 }

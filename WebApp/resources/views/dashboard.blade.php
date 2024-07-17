@@ -1,45 +1,212 @@
 @extends('layouts.bootstrap')
 
 @section('content')
-<div class="container">
-    <!-- Success Alert -->
-    @if(session('login_success'))
-    <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
-        You have successfully logged in.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    @endif
+    <div class="container">
+        <!-- Success Alert -->
+        <div id="successAlertContainer" class="mt-4">
+            <!-- Alert will be dynamically added here -->
+        </div>
 
-    <div class="card mt-4">
-        <div class="card-body">
-            <h5 class="card-title">Employee Details</h5>
-            <p class="card-text"><strong>Employee ID:</strong> <span id="employee_id"></span></p>
-            <p class="card-text"><strong>Name:</strong> <span id="employee_name"></span></p>
-            <p class="card-text"><strong>Email:</strong> <span id="employee_email"></span></p>
-            <p class="card-text"><strong>Date Joined:</strong> <span id="date_join"></span></p>
+        <div class="row mt-4">
+            <!-- Employee Details Card -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Employee Details</h5>
+                        <p class="card-text"><strong>Employee ID:</strong> <span id="employee_id"></span></p>
+                        <p class="card-text"><strong>Name:</strong> <span id="employee_name"></span></p>
+                        <p class="card-text"><strong>Email:</strong> <span id="employee_email"></span></p>
+                        <p class="card-text"><strong>Date Joined:</strong> <span id="date_join"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Card -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Messages</h5>
+                            <button id="clearMessages" class="btn btn-danger btn-sm">Clear</button>
+                        </div>
+                        <div class="messages-scroll" style="max-height: 145px; overflow-y: auto;">
+                            <ul id="messagesList" class="list-group">
+                                <!-- Messages will be dynamically added here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch employee data
-        fetch('http://localhost:8000/api/display_employees')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 200) {
-                    const employee = data.Employees_Name.find(emp => emp.email === '{{ Auth::user()->email }}');
-                    if (employee) {
-                        document.getElementById('employee_id').textContent = employee.employee_id;
-                        document.getElementById('employee_name').textContent = employee.name;
-                        document.getElementById('employee_email').textContent = employee.email;
-                        document.getElementById('date_join').textContent = employee.date_join;
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Message Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="messageDetails"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const loggedInUserId = {{ Auth::user()->employee_id }};
+            let lastCheckedMessages = [];
+
+            // Function to fetch and display employee data
+            function fetchEmployeeData() {
+                $.ajax({
+                    url: 'http://localhost:8000/api/display_employees',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 200) {
+                            const employee = response.Employees_Name.find(emp => emp.email ===
+                                '{{ Auth::user()->email }}');
+                            if (employee) {
+                                $('#employee_id').text(employee.employee_id);
+                                $('#employee_name').text(employee.name);
+                                $('#employee_email').text(employee.email);
+                                $('#date_join').text(employee.date_join);
+                            }
+                        } else {
+                            console.error('Failed to fetch employee data');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching employee data:', error);
                     }
-                } else {
-                    console.error('Failed to fetch employee data');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
-</script>
+                });
+            }
+
+            // Initial fetch of employee data
+            fetchEmployeeData();
+
+            // Function to fetch and display messages
+            function fetchMessages() {
+                $.ajax({
+                    url: 'http://localhost:8000/api/filter_employees',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 200) {
+                            const messagesList = $('#messagesList');
+                            messagesList.empty(); // Clear existing messages
+
+                            let hasUnreadMessages = false;
+
+                            response.data.forEach(message => {
+                                if (message.message && message.employee_id === loggedInUserId) {
+                                    const listItem = $('<li>')
+                                        .addClass('list-group-item')
+                                        .html(
+                                            `<strong>${message.date}</strong>: ${message.message.substring(0, 50)}... <a href="#" class="message-details" data-message="${message.message}" data-id="${message.attendance_id}">Read More</a>`
+                                        );
+                                    messagesList.append(listItem);
+
+                                    if (message.message_status === 1) {
+                                        hasUnreadMessages = true;
+                                        console.log('Unread message:', message.message);
+                                    }
+                                }
+                            });
+
+                            if (response.data.length === 0) {
+                                messagesList.html('<li class="list-group-item">No messages</li>');
+                            }
+
+                            // Show success alert if there are unread messages
+                            const successAlertContainer = $('#successAlertContainer');
+                            successAlertContainer.empty();
+
+                            if (hasUnreadMessages) {
+                                const successAlert = $('<div>')
+                                    .addClass('alert alert-success alert-dismissible fade show mt-4')
+                                    .attr('role', 'alert')
+                                    .html('You have unread messages.')
+                                    .append(
+                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                                    );
+                                successAlertContainer.append(successAlert);
+                                console.log('Unread messages found');
+                            }
+                        } else {
+                            console.error('Failed to fetch messages');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching messages:', error);
+                    }
+                });
+            }
+
+            // Initial fetch of messages
+            fetchMessages();
+
+            // Poll for new messages every 1 seconds
+            setInterval(function() {
+                fetchMessages();
+            }, 1000); // 1 seconds
+
+            // Function to handle message details modal
+            $(document).on('click', '.message-details', function(e) {
+                // e.preventDefault();
+                const message = $(this).data('message');
+                const attendanceId = $(this).data('id');
+                $('#messageDetails').text(message);
+                $('#messageModal').modal('show');
+
+                // Update message status to read
+                $.ajax({
+                    url: 'http://localhost:8000/api/update_message_status',
+                    method: 'POST',
+                    data: {
+                        attendance_id: attendanceId,
+                        message_status: 0, // Mark as read
+                        _token: '{{ csrf_token() }}' // CSRF token
+                    },
+                    success: function(response) {
+                        if (response.status === 200) {
+                            fetchMessages(); // Fetch updated messages after marking as read
+                        } else {
+                            console.error('Failed to update message status');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating message status:', error);
+                    }
+                });
+            });
+
+            // Function to clear messages
+            $('#clearMessages').click(function() {
+                $.ajax({
+                    url: 'http://localhost:8000/api/clear_messages',
+                    method: 'POST',
+                    data: {
+                        employee_id: loggedInUserId,
+                        _token: '{{ csrf_token() }}' // CSRF token
+                    },
+                    success: function(response) {
+                        if (response.status === 200) {
+                            fetchMessages(); // Fetch updated messages after clearing
+                        } else {
+                            console.error('Failed to clear messages');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error clearing messages:', error);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

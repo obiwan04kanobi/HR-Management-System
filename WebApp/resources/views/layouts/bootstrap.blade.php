@@ -53,6 +53,10 @@
             @yield('content')
         </main>
     </div>
+    <!-- Alert Container -->
+    <div id="messageAlert" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <!-- Alert will be dynamically updated here -->
+    </div>
 </body>
 
 </html>
@@ -68,7 +72,8 @@
             dataType: 'json',
             success: function(data) {
                 employeesData = data.Employees_Name;
-                const isAdmin = employeesData.some(employee => employee.report_to === loggedInUserId);
+                const isAdmin = employeesData.some(employee => employee.report_to ===
+                    loggedInUserId);
 
                 // Modify navbar links based on admin status
                 if (isAdmin) {
@@ -91,5 +96,55 @@
                 console.error('Error fetching employees:', error);
             }
         });
+    });
+</script>
+<!-- JavaScript and Ajax setup -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const loggedInUserId = {{ Auth::user()->employee_id }};
+        let lastCheckedMessages = [];
+
+        // Function to fetch and display messages
+        function fetchMessages() {
+            $.ajax({
+                url: 'http://localhost:8000/api/filter_employees',
+                method: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        const hasNewMessages = response.data.some(message =>
+                            message.message_status === 1 && message.employee_id === loggedInUserId
+                        );
+
+                        if (hasNewMessages) {
+                            showNewMessageAlert();
+                        }
+                    } else {
+                        console.error('Failed to fetch messages');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching messages:', error);
+                }
+            });
+        }
+
+        // Function to show the new message alert
+        function showNewMessageAlert() {
+            const alertContainer = $('#messageAlert');
+            const alertMessage = `
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    You have a new message from an admin.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            alertContainer.html(alertMessage);
+        }
+
+        // Poll for new messages every 1 seconds
+        setInterval(function() {
+            fetchMessages();
+        }, 1000); // 1 seconds
     });
 </script>

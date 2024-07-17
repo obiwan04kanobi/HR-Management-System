@@ -36,6 +36,28 @@
         <div id="attendanceTable" style="display: none;"></div>
     </div>
 
+    <!-- Modal for sending message -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="messageForm">
+                        <div class="mb-3">
+                            <label for="messageText" class="form-label">Message</label>
+                            <textarea class="form-control" id="messageText" rows="3" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap Toast -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -53,6 +75,8 @@
         $(document).ready(function() {
             const loggedInUserId = {{ Auth::user()->employee_id }};
             let employeesData = [];
+            let currentAttendanceId = null;
+            let message_status = 1;
 
             // Function to fetch employee names for dropdown
             function fetchEmployeeNames() {
@@ -138,7 +162,7 @@
             // Function to display attendance in a table
             function displayAttendance(data) {
                 var tableHtml =
-                    '<table class="table table-striped"><thead><tr><th>Employee Name</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+                    '<table class="table table-striped"><thead><tr><th>Employee Name</th><th>Date</th><th>Status</th><th>Action</th></tr></thead><tbody>';
 
                 if (data.length === 0) {
                     tableHtml += '<tr><td colspan="3">No records found</td></tr>';
@@ -148,12 +172,22 @@
                         tableHtml += '<td>' + attendance.employee_name + '</td>';
                         tableHtml += '<td>' + attendance.date + '</td>';
                         tableHtml += '<td>' + attendance.leave_type + '</td>';
+                        tableHtml +=
+                            '<td><button class="btn btn-primary btn-sm message-btn" data-attendance-id="' +
+                            attendance.attendance_id + '">Message</button></td>';
                         tableHtml += '</tr>';
                     });
                 }
 
                 tableHtml += '</tbody></table>';
                 $('#attendanceTable').html(tableHtml);
+
+                $('.message-btn').on('click', function() {
+                    currentAttendanceId = $(this).data('attendance-id'); // Corrected to 'attendance-id'
+
+                    console.log('Message button clicked for attendance ID:', currentAttendanceId);
+                    $('#messageModal').modal('show');
+                });
             }
 
             // Handle Search button click event
@@ -166,6 +200,55 @@
                 $('#filterForm')[0].reset();
                 $('#attendanceTable').empty();
             });
+
+            $('#messageForm').on('submit', function(e) {
+                e.preventDefault();
+                var message = $('#messageText').val();
+
+                console.log({
+                    attendance_id: currentAttendanceId,
+                    message: message,
+                    _token: "{{ csrf_token() }}"
+                });
+
+                fetch(`http://localhost:8000/api/send_message`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            attendance_id: currentAttendanceId,
+                            message_status: message_status,
+                            message: message,
+                            _token: "{{ csrf_token() }}"
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to send message.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        $('#messageModal').modal('hide');
+                        $('#messageText').val('');
+                        fetchAttendance();
+                        showToast('Message sent successfully', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                    });
+            });
+
+
+            // Function to show a toast message
+            function showToast(message, type) {
+                var toast = new bootstrap.Toast($('#successToast'));
+                $('#successToast .toast-body').text(message);
+                toast.show();
+            }
+
 
             // Check if the logged-in user is an admin
             $.ajax({

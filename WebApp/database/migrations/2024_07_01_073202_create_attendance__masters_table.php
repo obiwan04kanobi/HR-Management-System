@@ -19,6 +19,8 @@ class CreateAttendanceMastersTable extends Migration
             $table->time('punch_in')->nullable();
             $table->time('punch_out')->nullable();
             $table->date('date');
+            $table->string('message')->nullable();  // New column for messages
+            $table->boolean('message_status')->nullable();          // 0 means viewed, 1 not viewed 
             $table->timestamps();
 
             // Define foreign key constraint

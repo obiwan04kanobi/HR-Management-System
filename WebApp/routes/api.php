@@ -37,3 +37,7 @@ Route::prefix('leave')->group(function () {
 Route::prefix('leave')->group(function () {
     Route::post('/reject/{id}', [LeaveRejectController::class, 'reject'])->name('leave_reject');
 });
+
+Route::post('/send_message', [AttendanceController::class, 'sendMessage'])->name('send-message');
+Route::post('/update_message_status', [AttendanceController::class, 'updateMessageStatus'])->name('updateMessageStatus');
+Route::post('/clear_messages', [AttendanceController::class, 'clearMessages'])->name('clear_messages');
