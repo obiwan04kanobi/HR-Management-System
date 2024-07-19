@@ -22,7 +22,7 @@ class LeaveApplicationController extends Controller
             'to_date' => 'required|date|after_or_equal:from_date',
             'leave_type' => 'required|exists:leave_masters,leave_id',
             'session' => 'required|string|max:50',
-            'half' => 'required|string|max:50',
+            'half' => 'string|max:50',
             'remarks' => 'required|string|max:255',
             'status' => 'required|boolean',
         ]);

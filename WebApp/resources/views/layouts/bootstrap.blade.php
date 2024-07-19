@@ -98,8 +98,6 @@
         });
     });
 </script>
-<!-- JavaScript and Ajax setup -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function() {
         const loggedInUserId = {{ Auth::user()->employee_id }};
@@ -108,13 +106,14 @@
         // Function to fetch and display messages
         function fetchMessages() {
             $.ajax({
-                url: 'http://localhost:8000/api/filter_employees',
+                url: 'http://localhost:8000/api/display_messages',
                 method: 'GET',
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 200) {
-                        const hasNewMessages = response.data.some(message =>
-                            message.message_status === 1 && message.employee_id === loggedInUserId
+                        const hasNewMessages = response.messages.some(message =>
+                            message.message_status === 1 && message.message_to ===
+                            loggedInUserId
                         );
 
                         if (hasNewMessages) {
@@ -148,3 +147,4 @@
         }, 1000); // 1 seconds
     });
 </script>
+

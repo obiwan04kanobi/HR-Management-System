@@ -12,6 +12,7 @@ use App\Http\Controllers\LeaveMasterController;
 use App\Http\Controllers\LeaveApplicationDisplay;
 use App\Http\Controllers\LeaveApprovalController;
 use App\Http\Controllers\LeaveRejectController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -25,6 +26,7 @@ Route::get('filter_employees', [AttendanceController::class, 'filterEmployees'])
 Route::get('display_balance', [DisplayBalance::class, 'balance']);
 Route::get('leaves', [LeaveMasterController::class, 'leave_types']);
 Route::get('display_leaves', [LeaveApplicationDisplay::class, 'Leaves']);
+Route::get('display_messages', [MessageController::class, 'displayMessages']);
 
 
 // post api's
@@ -38,6 +40,6 @@ Route::prefix('leave')->group(function () {
     Route::post('/reject/{id}', [LeaveRejectController::class, 'reject'])->name('leave_reject');
 });
 
-Route::post('/send_message', [AttendanceController::class, 'sendMessage'])->name('send-message');
-Route::post('/update_message_status', [AttendanceController::class, 'updateMessageStatus'])->name('updateMessageStatus');
-Route::post('/clear_messages', [AttendanceController::class, 'clearMessages'])->name('clear_messages');
+Route::post('/send_message', [MessageController::class, 'sendMessage'])->name('send-message');
+Route::post('/update_message_status', [MessageController::class, 'updateMessageStatus'])->name('updateMessageStatus');
+Route::post('/clear_messages', [MessageController::class, 'clearMessages'])->name('clear_messages');

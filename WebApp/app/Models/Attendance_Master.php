@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class Attendance_Master extends Model
 {
@@ -18,7 +17,7 @@ class Attendance_Master extends Model
         'employee_id',
         'punch_in',
         'punch_out',
-        'date',
+        'date', // Assuming this is the correct attribute for the attendance date
         'message',
         'message_status'
     ];

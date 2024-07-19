@@ -78,6 +78,8 @@
             const loggedInUserId = {{ Auth::user()->employee_id }};
             // const loggedInUserName = "{{ Auth::user()->employee_name }}"; // Fetch logged-in user's name
             // Function to fetch employee names for dropdown
+            let half = null;
+
             function fetchEmployeeNames() {
                 $.ajax({
                     url: 'http://localhost:8000/api/display_employees',
@@ -285,16 +287,15 @@
                                     '<option value="Half Day" disabled>Half Day</option>');
 
                             } else if (fromDate != toDate) {
-                                halfDropdown.append(
-                                    '<option value="1st Half" disabled>1st Half</option>');
-                                halfDropdown.append(
-                                    '<option value="2nd Half" disabled>2nd Half</option>');
                                 sessionDropdown.append(
                                     '<option value="Full Day" selected>Full Day</option>');
                                 sessionDropdown.append(
                                     '<option value="Short Leave" disabled>Short Leave</option>');
                                 sessionDropdown.append(
                                     '<option value="Half Day" disabled>Half Day</option>');
+                                $('#half').prop('disabled', true);
+                                console.log("fromDate === toDate");
+                                $('#half').val(half);
 
                             } else {
                                 halfDropdown.append('<option value="1st Half">1st Half</option>');

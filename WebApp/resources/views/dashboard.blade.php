@@ -2,7 +2,16 @@
 
 @section('content')
     <div class="container">
+
         <!-- Success Alert -->
+        @if (session('login_success'))
+            <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
+                You have successfully logged in.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        <!-- You Have Unread Messages Alert -->
         <div id="successAlertContainer" class="mt-4">
             <!-- Alert will be dynamically added here -->
         </div>
@@ -60,6 +69,7 @@
         $(document).ready(function() {
             const loggedInUserId = {{ Auth::user()->employee_id }};
             let lastCheckedMessages = [];
+            let currentMessageID = null;
 
             // Function to fetch and display employee data
             function fetchEmployeeData() {
@@ -93,7 +103,7 @@
             // Function to fetch and display messages
             function fetchMessages() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/filter_employees',
+                    url: 'http://localhost:8000/api/display_messages',
                     method: 'GET',
                     dataType: 'json',
                     success: function(response) {
@@ -103,23 +113,24 @@
 
                             let hasUnreadMessages = false;
 
-                            response.data.forEach(message => {
-                                if (message.message && message.employee_id === loggedInUserId) {
+                            response.messages.forEach(message => {
+                                if (message.message && message.message_to === loggedInUserId) {
                                     const listItem = $('<li>')
                                         .addClass('list-group-item')
                                         .html(
-                                            `<strong>${message.date}</strong>: ${message.message.substring(0, 50)}... <a href="#" class="message-details" data-message="${message.message}" data-id="${message.attendance_id}">Read More</a>`
+                                            `<strong>${message.attendance_date || 'No Date'}</strong>: ${message.message.substring(0, 50)}... <a href="#" class="message-details" data-message="${message.message}" data-id="${message.attendance_id}">Read More</a>`
                                         );
                                     messagesList.append(listItem);
+                                    currentMessageID = message.message_id;
+                                    console.log("Selected Message",message.message_id);
 
                                     if (message.message_status === 1) {
                                         hasUnreadMessages = true;
-                                        console.log('Unread message:', message.message);
                                     }
                                 }
                             });
 
-                            if (response.data.length === 0) {
+                            if (response.messages.length === 0) {
                                 messagesList.html('<li class="list-group-item">No messages</li>');
                             }
 
@@ -136,7 +147,6 @@
                                         '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
                                     );
                                 successAlertContainer.append(successAlert);
-                                console.log('Unread messages found');
                             }
                         } else {
                             console.error('Failed to fetch messages');
@@ -154,22 +164,21 @@
             // Poll for new messages every 1 seconds
             setInterval(function() {
                 fetchMessages();
-            }, 1000); // 1 seconds
+            }, 1000); // 1 second
 
             // Function to handle message details modal
             $(document).on('click', '.message-details', function(e) {
-                // e.preventDefault();
+                e.preventDefault();
                 const message = $(this).data('message');
                 const attendanceId = $(this).data('id');
                 $('#messageDetails').text(message);
                 $('#messageModal').modal('show');
-
                 // Update message status to read
                 $.ajax({
                     url: 'http://localhost:8000/api/update_message_status',
                     method: 'POST',
                     data: {
-                        attendance_id: attendanceId,
+                        message_id: currentMessageID,
                         message_status: 0, // Mark as read
                         _token: '{{ csrf_token() }}' // CSRF token
                     },
@@ -192,7 +201,7 @@
                     url: 'http://localhost:8000/api/clear_messages',
                     method: 'POST',
                     data: {
-                        employee_id: loggedInUserId,
+                        message_to: loggedInUserId,
                         _token: '{{ csrf_token() }}' // CSRF token
                     },
                     success: function(response) {

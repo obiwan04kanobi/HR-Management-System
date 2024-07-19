@@ -184,7 +184,7 @@
 
                 $('.message-btn').on('click', function() {
                     currentAttendanceId = $(this).data('attendance-id'); // Corrected to 'attendance-id'
-
+                    console.log("Logged in UserID:", loggedInUserId);
                     console.log('Message button clicked for attendance ID:', currentAttendanceId);
                     $('#messageModal').modal('show');
                 });
@@ -207,6 +207,8 @@
 
                 console.log({
                     attendance_id: currentAttendanceId,
+                    message_from: loggedInUserId,
+                    message_status: message_status,
                     message: message,
                     _token: "{{ csrf_token() }}"
                 });
@@ -219,6 +221,7 @@
                         },
                         body: JSON.stringify({
                             attendance_id: currentAttendanceId,
+                            message_from: loggedInUserId,
                             message_status: message_status,
                             message: message,
                             _token: "{{ csrf_token() }}"

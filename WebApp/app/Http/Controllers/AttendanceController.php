@@ -54,8 +54,8 @@ class AttendanceController extends Controller
                 'leave_type' => $leaveType,
                 'report_to' => $reportTo,
                 'attendance_id' => $attendance->attendance_id,
-                'message' => $attendance->message,
-                'message_status' => $attendance->message_status,
+                // 'message' => $attendance->message,
+                // 'message_status' => $attendance->message_status,
             ];
         });
 
