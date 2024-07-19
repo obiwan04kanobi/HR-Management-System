@@ -114,7 +114,7 @@
                             let hasUnreadMessages = false;
 
                             response.messages.forEach(message => {
-                                if (message.message && message.message_to === loggedInUserId) {
+                                if (message.message && message.message_to === loggedInUserId && message.message_status === 1 || message.message_status === 2) {
                                     const listItem = $('<li>')
                                         .addClass('list-group-item')
                                         .html(
@@ -174,12 +174,13 @@
                 $('#messageDetails').text(message);
                 $('#messageModal').modal('show');
                 // Update message status to read
+                console.log("message details opened");
                 $.ajax({
                     url: 'http://localhost:8000/api/update_message_status',
                     method: 'POST',
                     data: {
                         message_id: currentMessageID,
-                        message_status: 0, // Mark as read
+                        message_status: 2, // Mark as read
                         _token: '{{ csrf_token() }}' // CSRF token
                     },
                     success: function(response) {

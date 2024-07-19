@@ -71,7 +71,7 @@ class MessageController extends Controller
     {
         $request->validate([
             'message_id' => 'required|exists:messages,message_id',
-            'message_status' => 'required|boolean',
+            'message_status' => 'required|int:0,1,2',
         ]);
     
         try {

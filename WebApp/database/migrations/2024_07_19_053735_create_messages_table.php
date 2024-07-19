@@ -17,7 +17,7 @@ class CreateMessagesTable extends Migration
             $table->unsignedBigInteger('message_from');
             $table->unsignedBigInteger('message_to');
             $table->string('message')->nullable();  // New column for messages
-            $table->boolean('message_status')->nullable();          // 0 means viewed, 1 not viewed 
+            $table->BigInteger('message_status')->nullable();          // 0 means cleared, 1 not read, 2 means read
             $table->timestamps();
 
             // Define foreign key constraint
