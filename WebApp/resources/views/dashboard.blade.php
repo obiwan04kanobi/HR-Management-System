@@ -130,7 +130,7 @@
                                 }
                             });
 
-                            if (response.messages.length === 0) {
+                            if (!hasUnreadMessages) {
                                 messagesList.html('<li class="list-group-item">No messages</li>');
                             }
 
