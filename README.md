@@ -16,13 +16,15 @@ The **MyLava Employee Management System** is a web application designed to manag
 - **Attendance Tracking**: Employees can view and manage their attendance records.
 - **Leave Application**: Employees can apply for leave, specifying the type and duration.
 - **Password Reset**: Users can reset their passwords if forgotten.
+- **Messages**: Employees can give reply to messages from admin. Employees cannot send messages to admin & other employees.
+- **Compulsory leave**: Users can apply for compulsory leave. Admin can approve or reject the compulsory leave.
 
 ### Admin Features
 
 - **Admin Attendance Management**: Admins can view and manage attendance records for all employees.
 - **Leave Approval**: Admins can view and approve leave applications submitted by employees who report to them.
 - **Apply Leave for Employees**: Admins can apply leave on behalf of their reporting employees.
-
+- **Messages**: Admins can send messages to employees for a particular date from Admin Attendance.
 ---
 
 ## 💻 Technologies Used 
