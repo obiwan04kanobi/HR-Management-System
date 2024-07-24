@@ -60,6 +60,14 @@
                 </div>
                 <div class="modal-body">
                     <p id="messageDetails"></p>
+                    <ul id="threadMessages" class="list-group">
+                        <!-- Thread messages will be dynamically added here -->
+                    </ul>
+                    <button id="replyButton" class="btn btn-primary mt-3">Reply</button>
+                    <div id="replySection" class="mt-3" style="display: none;">
+                        <textarea id="replyMessage" class="form-control mb-3" rows="3"></textarea>
+                        <button id="sendReply" class="btn btn-success">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,154 +76,321 @@
     <script>
         $(document).ready(function() {
             const loggedInUserId = {{ Auth::user()->employee_id }};
-            let lastCheckedMessages = [];
-            let currentMessageID = null;
+            let employeesData = [];
+            let loggedinAdmin; // 0 means false, 1 means true
+            let employee_boss;
+            let globalparentID;
 
             // Function to fetch and display employee data
-            function fetchEmployeeData() {
-                $.ajax({
-                    url: 'http://localhost:8000/api/display_employees',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status === 200) {
-                            const employee = response.Employees_Name.find(emp => emp.email ===
-                                '{{ Auth::user()->email }}');
-                            if (employee) {
-                                $('#employee_id').text(employee.employee_id);
-                                $('#employee_name').text(employee.name);
-                                $('#employee_email').text(employee.email);
-                                $('#date_join').text(employee.date_join);
-                            }
-                        } else {
-                            console.error('Failed to fetch employee data');
+            async function fetchEmployeeData() {
+                try {
+                    const response = await $.ajax({
+                        url: 'http://localhost:8000/api/display_employees',
+                        method: 'GET',
+                        dataType: 'json'
+                    });
+
+                    if (response.status === 200) {
+                        const employee = response.Employees_Name.find(emp => emp.email ===
+                            '{{ Auth::user()->email }}');
+                        if (employee) {
+                            $('#employee_id').text(employee.employee_id);
+                            $('#employee_name').text(employee.name);
+                            $('#employee_email').text(employee.email);
+                            $('#date_join').text(employee.date_join);
+                            employee_boss = employee.report_to;
+                            console.log(employee_boss);
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching employee data:', error);
+                    } else {
+                        console.error('Failed to fetch employee data:', response);
                     }
-                });
+                } catch (error) {
+                    console.error('Error fetching employee data:', error);
+                }
             }
 
             // Initial fetch of employee data
             fetchEmployeeData();
 
-            // Function to fetch and display messages
-            function fetchMessages() {
-                $.ajax({
-                    url: 'http://localhost:8000/api/display_messages',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status === 200) {
-                            const messagesList = $('#messagesList');
-                            messagesList.empty(); // Clear existing messages
+            //////////////////////////////////////// 1. Fetch and Display Messages ////////////////////////////////////////
 
-                            let hasUnreadMessages = false;
+            // Check if the logged-in user is an admin
+            $.ajax({
+                url: 'http://localhost:8000/api/display_employees',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    employeesData = data.Employees_Name;
+                    const isAdmin = employeesData.some(employee => employee.report_to ===
+                        loggedInUserId);
 
-                            response.messages.forEach(message => {
-                                if (message.message && message.message_to === loggedInUserId && message.message_status === 1 || message.message_status === 2) {
-                                    const listItem = $('<li>')
-                                        .addClass('list-group-item')
-                                        .html(
-                                            `<strong>${message.attendance_date || 'No Date'}</strong>: ${message.message.substring(0, 50)}... <a href="#" class="message-details" data-message="${message.message}" data-id="${message.attendance_id}">Read More</a>`
-                                        );
-                                    messagesList.append(listItem);
-                                    currentMessageID = message.message_id;
-                                    console.log("Selected Message",message.message_id);
+                    loggedinAdmin = isAdmin ? 1 : 0;
+                    console.log(isAdmin ? "admin logged in" : "normal user logged in");
 
-                                    if (message.message_status === 1) {
-                                        hasUnreadMessages = true;
-                                    }
-                                }
-                            });
+                },
+                error: function(error) {
+                    console.error('Error fetching employees:', error);
+                }
+            });
 
-                            if (!hasUnreadMessages) {
-                                messagesList.html('<li class="list-group-item">No messages</li>');
-                            }
+            //////////////////////////////////////// 2. Fetch and Display Messages ////////////////////////////////////////
 
-                            // Show success alert if there are unread messages
-                            const successAlertContainer = $('#successAlertContainer');
-                            successAlertContainer.empty();
-
-                            if (hasUnreadMessages) {
-                                const successAlert = $('<div>')
-                                    .addClass('alert alert-success alert-dismissible fade show mt-4')
-                                    .attr('role', 'alert')
-                                    .html('You have unread messages.')
-                                    .append(
-                                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                                    );
-                                successAlertContainer.append(successAlert);
-                            }
-                        } else {
-                            console.error('Failed to fetch messages');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching messages:', error);
+            async function fetchMessages() {
+                try {
+                    let response;
+                    if (loggedinAdmin === 1) {
+                        response = await $.ajax({
+                            url: 'http://localhost:8000/api/display_admin_messages',
+                            method: 'GET',
+                            dataType: 'json'
+                        });
+                    } else if (loggedinAdmin === 0) {
+                        response = await $.ajax({
+                            url: 'http://localhost:8000/api/display_emp_messages',
+                            method: 'GET',
+                            dataType: 'json'
+                        });
                     }
-                });
+
+                    if (response && response.status === 200) {
+                        const messagesList = $('#messagesList');
+                        messagesList.empty(); // Clear existing messages
+
+                        let hasUnreadMessages = false;
+
+                        response.messages.forEach(message => {
+                            if (message.message && message.message_to === loggedInUserId && (message
+                                    .message_status === 1 || message.message_status === 2)) {
+                                const listItem = $('<li>')
+                                    .addClass('list-group-item')
+                                    .html(
+                                        `<strong>${message.attendance_date || 'No Date'}</strong>: ${message.message.substring(0, 50)}... <a href="#" class="message-details" data-message="${message.message}" data-id="${message.employee_message_id}" data-from="${message.message_from}" data-to="${message.message_to}" data-attendance="${message.attendance_id}" data-parent="${message.parent_id}">Read More</a>`
+                                    );
+                                messagesList.append(listItem);
+
+                                if (message.message_status === 1) {
+                                    hasUnreadMessages = true;
+                                }
+                                else if (message.message_status === 1 || message.message_status === 2) {
+                                    globalparentID = message.parent_message
+                                    console.log(`ParentID: ${message.parent_message}`);
+                                }
+
+
+                            }
+                        });
+
+                        const successAlertContainer = $('#successAlertContainer');
+                        successAlertContainer.empty();
+
+                        if (hasUnreadMessages) {
+                            const successAlert = $('<div>')
+                                .addClass('alert alert-success alert-dismissible fade show mt-4')
+                                .attr('role', 'alert')
+                                .html('You have unread messages.')
+                                .append(
+                                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+                                );
+                            successAlertContainer.append(successAlert);
+                        }
+                    } else {
+                        console.error('Failed to fetch messages:', response);
+                    }
+                } catch (error) {
+                    console.error('Error fetching messages:', error);
+                }
             }
+
 
             // Initial fetch of messages
             fetchMessages();
 
-            // Poll for new messages every 1 seconds
-            setInterval(function() {
-                fetchMessages();
-            }, 1000); // 1 second
+            // Poll for new messages every 10 seconds
+            setInterval(fetchMessages, 1000); // 10 seconds
 
-            // Function to handle message details modal
-            $(document).on('click', '.message-details', function(e) {
+            $(document).on('click', '.message-details', async function(e) {
                 e.preventDefault();
                 const message = $(this).data('message');
-                const attendanceId = $(this).data('id');
+                const messageId = $(this).data('id');
+                const messageFrom = $(this).data('from');
+                const messageTo = $(this).data('to');
+                const attendanceId = $(this).data('attendance');
+                const parentId = $(this).data('parent'); // Ensure this is correctly set
+
                 $('#messageDetails').text(message);
                 $('#messageModal').modal('show');
-                // Update message status to read
-                console.log("message details opened");
-                $.ajax({
-                    url: 'http://localhost:8000/api/update_message_status',
-                    method: 'POST',
-                    data: {
-                        message_id: currentMessageID,
-                        message_status: 2, // Mark as read
-                        _token: '{{ csrf_token() }}' // CSRF token
-                    },
-                    success: function(response) {
-                        if (response.status === 200) {
-                            fetchMessages(); // Fetch updated messages after marking as read
-                        } else {
-                            console.error('Failed to update message status');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error updating message status:', error);
-                    }
+                currentMessageID = messageId;
+                currentMessageFrom = messageFrom;
+                currentAttendanceID = attendanceId;
+
+                await fetchThreadMessages(messageId);
+
+                // Show reply section
+                $('#replyButton').off('click').click(function() {
+                    $('#replySection').toggle();
                 });
+
+                // Send reply
+                $('#sendReply').off('click').click(async function() {
+                    const replyMessage = $('#replyMessage').val();
+                    await sendReply(replyMessage, globalparentID, messageFrom,
+                        currentAttendanceID);
+                });
+
+                // Update message status to read
+                try {
+                    if (loggedinAdmin === 1) {
+                        console.log(`${currentMessageID}+${messageFrom}+${currentAttendanceID}`);
+                        await $.ajax({
+                            url: 'http://localhost:8000/api/update_message_status',
+                            method: 'POST',
+                            data: {
+                                message_id: globalparentID,
+                                message_status: 2, // Mark as read
+                                _token: '{{ csrf_token() }}' // CSRF token
+                            }
+                        });
+                    } else if (loggedinAdmin === 0) {
+                        console.log(`${currentMessageID}+${messageFrom}+${currentAttendanceID}`);
+                        await $.ajax({
+                            url: 'http://localhost:8000/api/emp_update_message_status',
+                            method: 'POST',
+                            data: {
+                                employee_message_id: currentMessageID,
+                                message_status: 2, // Mark as read
+                                _token: '{{ csrf_token() }}' // CSRF token
+                            }
+                        });
+                    }
+
+                    fetchMessages(); // Fetch updated messages after marking as read
+                } catch (error) {
+                    console.error('Error updating message status:', error);
+                }
             });
 
-            // Function to clear messages
-            $('#clearMessages').click(function() {
-                $.ajax({
-                    url: 'http://localhost:8000/api/clear_messages',
-                    method: 'POST',
-                    data: {
-                        message_to: loggedInUserId,
-                        _token: '{{ csrf_token() }}' // CSRF token
-                    },
-                    success: function(response) {
-                        if (response.status === 200) {
-                            fetchMessages(); // Fetch updated messages after clearing
-                        } else {
-                            console.error('Failed to clear messages');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error clearing messages:', error);
+
+            // Function to fetch thread messages
+            // Function to fetch thread messages
+            async function fetchThreadMessages(parentId) {
+                try {
+                    let response;
+                    if (loggedinAdmin === 1) {
+                        response = await $.ajax({
+                            url: `http://localhost:8000/api/display_thread_messages/${parentId}`,
+                            method: 'GET',
+                            dataType: 'json'
+                        });
+                    } else if (loggedinAdmin === 0) {
+                        response = await $.ajax({
+                            url: `http://localhost:8000/api/emp_display_thread_messages/${parentId}`,
+                            method: 'GET',
+                            dataType: 'json'
+                        });
                     }
-                });
+
+                    if (response && response.status === 200) {
+                        const threadMessages = $('#threadMessages');
+                        threadMessages.empty();
+
+                        let currentDate = '';
+                        response.thread_messages.forEach(message => {
+                            // Group by attendance date
+                            if (currentDate !== message.attendance_date) {
+                                threadMessages.append(
+                                    `<h4>Attendance Date: ${message.attendance_date}</h4>`);
+                                currentDate = message.attendance_date;
+                            }
+
+                            // Display message details
+                            const listItem = $('<li>')
+                                .addClass('list-group-item')
+                                .html(
+                                    `<strong>From:</strong> ${message.message_from_name} <br>
+                        <strong>To:</strong> ${message.message_to_name} <br>
+                        <strong>Message:</strong> ${message.message}`
+                                );
+                            threadMessages.append(listItem);
+                        });
+                    } else {
+                        console.error('Failed to fetch thread messages:', response);
+                    }
+                } catch (error) {
+                    console.error('Error fetching thread messages:', error);
+                }
+            }
+
+
+
+            async function sendReply(message, parentId, message_from, attendanceId) {
+                try {
+                    let response;
+                    const url = loggedinAdmin === 1 ?
+                        'http://localhost:8000/api/send_reply' :
+                        'http://localhost:8000/api/emp_send_reply';
+
+                    console.log(`Sending request to: ${url}`); // Debug URL
+                    console.log(`parentID: ${globalparentID}`);
+                    response = await $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: {
+                            parent_id: loggedinAdmin === 1 ? globalparentID : currentMessageID,
+                            message: message,
+                            message_from: loggedInUserId,
+                            message_to: loggedinAdmin === 1 ? message_from : employee_boss,
+                            attendance_id: attendanceId,
+                            _token: '{{ csrf_token() }}' // CSRF token
+                        },
+                        success: function(data) {
+                            console.log('AJAX success:', data); // Debug success response
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX error:', status, error); // Debug error response
+                        }
+                    });
+
+                    console.log('API Response:', response); // Debug API response
+
+                    if (response && response.status === 200) {
+                        $('#replyMessage').val('');
+                        fetchMessages(); // Refresh messages
+                    } else {
+                        console.error('Failed to send reply:', response);
+                    }
+                } catch (error) {
+                    console.error('Error sending reply:', error);
+                }
+            }
+
+
+            // Function to clear messages
+            $('#clearMessages').click(async function() {
+                try {
+                    if (loggedinAdmin === 1) {
+                        await $.ajax({
+                            url: 'http://localhost:8000/api/clear_messages',
+                            method: 'POST',
+                            data: {
+                                message_to: loggedInUserId,
+                                _token: '{{ csrf_token() }}' // CSRF token
+                            }
+                        });
+                    } else if (loggedinAdmin === 0) {
+                        await $.ajax({
+                            url: 'http://localhost:8000/api/emp_clear_messages',
+                            method: 'POST',
+                            data: {
+                                message_to: loggedInUserId,
+                                _token: '{{ csrf_token() }}' // CSRF token
+                            }
+                        });
+                    }
+
+                    fetchMessages(); // Fetch updated messages after clearing
+                } catch (error) {
+                    console.error('Error clearing messages:', error);
+                }
             });
         });
     </script>

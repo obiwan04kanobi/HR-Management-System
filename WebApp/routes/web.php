@@ -51,9 +51,12 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     });
 
-
     Route::get('/leave_approve', function () {
         return view('leave_approve');
+    });
+
+    Route::get('/compoff', function () {
+        return view('compoff_from');
     });
     
 });

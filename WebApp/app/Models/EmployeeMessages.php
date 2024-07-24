@@ -4,32 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Attendance_Master as Attendance;
-use App\Models\Employees as Employee;
+use App\Models\Employees as Employee; 
+use App\Models\Attendance_Master;
 
-class Messages extends Model
+class EmployeeMessages extends Model
 {
     use HasFactory;
 
-    protected $table = 'messages';
-
-    // Define the primary key column
-    protected $primaryKey = 'message_id';
-
-    public $incrementing = false; // If your primary key is not auto-incrementing
-
+    protected $primaryKey = 'employee_message_id';
     protected $fillable = [
-        'message_id',
         'attendance_id',
         'message_from',
         'message_to',
         'message',
-        'message_status'
+        'message_status',
+        'parent_id',
     ];
 
     public function attendance()
     {
-        return $this->belongsTo(Attendance::class, 'attendance_id', 'attendance_id');
+        return $this->belongsTo(Attendance_Master::class, 'attendance_id', 'attendance_id');
     }
 
     public function sender()

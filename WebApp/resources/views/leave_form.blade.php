@@ -293,7 +293,21 @@
                                     '<option value="Short Leave" disabled>Short Leave</option>');
                                 sessionDropdown.append(
                                     '<option value="Half Day" disabled>Half Day</option>');
+                                console.log("fromDate != toDate");
                                 $('#half').prop('disabled', true);
+                                $('#half').val(half);
+
+                            } else if (fromDate === toDate) {
+                                sessionDropdown.append(
+                                    '<option value="Full Day" disabled>Full Day</option>');
+                                sessionDropdown.append(
+                                    '<option value="Short Leave">Short Leave</option>');
+                                sessionDropdown.append(
+                                    '<option value="Half Day">Half Day</option>');
+                                halfDropdown.append(
+                                    '<option value="1st Half">1st Half</option>');
+                                halfDropdown.append(
+                                    '<option value="2nd Half">2nd Half</option>');
                                 console.log("fromDate === toDate");
                                 $('#half').val(half);
 
@@ -333,6 +347,26 @@
             });
             $('#to_date').on('change', function() {
                 updateSessionDropdown();
+            });
+
+            const picker = document.getElementById('from_date');
+            picker.addEventListener('input', function(e) {
+                var day = new Date(this.value).getUTCDay();
+                if ([6, 0].includes(day)) {
+                    e.preventDefault();
+                    this.value = '';
+                    alert('Weekends not allowed');
+                }
+            });
+
+            const picker2 = document.getElementById('to_date');
+            picker2.addEventListener('input', function(e) {
+                var day = new Date(this.value).getUTCDay();
+                if ([6, 0].includes(day)) {
+                    e.preventDefault();
+                    this.value = '';
+                    alert('Weekends not allowed');
+                }
             });
 
             // Set date range for from_date based on leave type
@@ -389,7 +423,8 @@
             // Clear form
             $('#clearBtn').on('click', function() {
                 $('#leaveApplicationForm')[0].reset();
-                $('#session').html('<option value="">Select Session</option>');
+                // $('#session').html('<option value="">Select Session</option>');
+                // $('#half').html('<option value="">Select Half</option>');
                 $('#sessionMessage').text('');
                 $('#submitBtn').prop('disabled', false);
                 $('#half').html('<option value="">Select Half</option>');

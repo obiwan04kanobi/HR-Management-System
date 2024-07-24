@@ -12,7 +12,9 @@ use App\Http\Controllers\LeaveMasterController;
 use App\Http\Controllers\LeaveApplicationDisplay;
 use App\Http\Controllers\LeaveApprovalController;
 use App\Http\Controllers\LeaveRejectController;
-use App\Http\Controllers\MessageController;
+use App\Http\Controllers\AdminMessageController;
+use App\Http\Controllers\EmployeeMessageController;
+use App\Http\Controllers\DisplayHolidays;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -26,8 +28,7 @@ Route::get('filter_employees', [AttendanceController::class, 'filterEmployees'])
 Route::get('display_balance', [DisplayBalance::class, 'balance']);
 Route::get('leaves', [LeaveMasterController::class, 'leave_types']);
 Route::get('display_leaves', [LeaveApplicationDisplay::class, 'Leaves']);
-Route::get('display_messages', [MessageController::class, 'displayMessages']);
-
+Route::get('display_holidays', [DisplayHolidays::class, 'holidays']);
 
 // post api's
 Route::post('leave_application', [LeaveApplicationController::class, 'store']);
@@ -40,6 +41,21 @@ Route::prefix('leave')->group(function () {
     Route::post('/reject/{id}', [LeaveRejectController::class, 'reject'])->name('leave_reject');
 });
 
-Route::post('/send_message', [MessageController::class, 'sendMessage'])->name('send-message');
-Route::post('/update_message_status', [MessageController::class, 'updateMessageStatus'])->name('updateMessageStatus');
-Route::post('/clear_messages', [MessageController::class, 'clearMessages'])->name('clear_messages');
+
+// Messages API's
+
+// Admin Messages
+Route::get('/display_admin_messages', [AdminMessageController::class, 'displayMessages']);
+Route::post('/send_message', [AdminMessageController::class, 'sendMessage']);
+Route::post('/send_reply', [AdminMessageController::class, 'sendReply']);
+Route::post('/update_message_status', [AdminMessageController::class, 'updateMessageStatus']);
+Route::post('/clear_messages', [AdminMessageController::class, 'clearMessages']);
+Route::get('/display_thread_messages/{parentId}', [AdminMessageController::class, 'displayThreadMessages']);
+
+// Employee Messages
+Route::get('/display_emp_messages', [EmployeeMessageController::class, 'displayMessages']);
+Route::post('/emp_send_reply', [EmployeeMessageController::class, 'sendReply']);
+
+Route::post('/emp_update_message_status', [EmployeeMessageController::class, 'updateMessageStatus']);
+Route::post('/emp_clear_messages', [EmployeeMessageController::class, 'clearMessages']);
+Route::get('/emp_display_thread_messages/{parentId}', [EmployeeMessageController::class, 'displayThreadMessages']);

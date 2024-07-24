@@ -15,6 +15,7 @@
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" integrity="sha256-sw0iNNXmOJbQhYFuC9OF2kOlD5KQKe1y5lfBn4C9Sjg=" crossorigin="anonymous"></script>
     </script>
 </head>
 
@@ -38,6 +39,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/reset-password">Reset Password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/compoff">Compulsory leave</a>
                         </li>
                     </ul>
                     <form action="/logout" method="post" class="d-flex" role="search">
@@ -102,49 +106,117 @@
     $(document).ready(function() {
         const loggedInUserId = {{ Auth::user()->employee_id }};
         let lastCheckedMessages = [];
+        let employeesData = [];
 
-        // Function to fetch and display messages
-        function fetchMessages() {
-            $.ajax({
-                url: 'http://localhost:8000/api/display_messages',
-                method: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 200) {
-                        const hasNewMessages = response.messages.some(message =>
-                            message.message_status === 1 && message.message_to ===
-                            loggedInUserId
-                        );
 
-                        if (hasNewMessages) {
-                            showNewMessageAlert();
-                        }
-                    } else {
-                        console.error('Failed to fetch messages');
+        // Check if the logged-in user is an admin
+        $.ajax({
+            url: 'http://localhost:8000/api/display_employees',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                employeesData = data.Employees_Name;
+                const isAdmin = employeesData.some(employee => employee.report_to ===
+                    loggedInUserId);
+
+                // Modify navbar links based on admin status
+                if (isAdmin) {
+                    // Function to fetch and display messages
+                    function fetchMessages() {
+                        $.ajax({
+                            url: 'http://localhost:8000/api/display_admin_messages',
+                            method: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 200) {
+                                    const hasNewMessages = response.messages.some(
+                                        message =>
+                                        message.message_status === 1 && message
+                                        .message_to ===
+                                        loggedInUserId
+                                    );
+
+                                    if (hasNewMessages) {
+                                        showNewMessageAlert();
+                                    }
+                                } else {
+                                    console.error('Failed to fetch messages');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching messages:', error);
+                            }
+                        });
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching messages:', error);
-                }
-            });
-        }
 
-        // Function to show the new message alert
-        function showNewMessageAlert() {
-            const alertContainer = $('#messageAlert');
-            const alertMessage = `
+                    // Function to show the new message alert
+                    function showNewMessageAlert() {
+                        const alertContainer = $('#messageAlert');
+                        const alertMessage = `
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
-                    You have a new message from an admin.
+                    You have a new message.
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `;
-            alertContainer.html(alertMessage);
-        }
+                        alertContainer.html(alertMessage);
+                    }
 
-        // Poll for new messages every 1 seconds
-        setInterval(function() {
-            fetchMessages();
-        }, 1000); // 1 seconds
+                    // Poll for new messages every 1 seconds
+                    setInterval(function() {
+                        fetchMessages();
+                    }, 1000); // 1 seconds
+
+                } else {
+                    // Function to fetch and display messages
+                    function fetchMessages() {
+                        $.ajax({
+                            url: 'http://localhost:8000/api/display_emp_messages',
+                            method: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.status === 200) {
+                                    const hasNewMessages = response.messages.some(
+                                        message =>
+                                        message.message_status === 1 && message
+                                        .message_to ===
+                                        loggedInUserId
+                                    );
+
+                                    if (hasNewMessages) {
+                                        showNewMessageAlert();
+                                    }
+                                } else {
+                                    console.error('Failed to fetch messages');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching messages:', error);
+                            }
+                        });
+                    }
+
+                    // Function to show the new message alert
+                    function showNewMessageAlert() {
+                        const alertContainer = $('#messageAlert');
+                        const alertMessage = `
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    You have a new message.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+                        alertContainer.html(alertMessage);
+                    }
+
+                    // Poll for new messages every 1 seconds
+                    setInterval(function() {
+                        fetchMessages();
+                    }, 1000); // 1 seconds
+                }
+            },
+            error: function(error) {
+                console.error('Error fetching employees:', error);
+            }
+        });
+
     });
 </script>
-
