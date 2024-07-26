@@ -79,6 +79,7 @@
             // const loggedInUserName = "{{ Auth::user()->employee_name }}"; // Fetch logged-in user's name
             // Function to fetch employee names for dropdown
             let half = null;
+            let holidays = [];
 
             function fetchEmployeeNames() {
                 $.ajax({
@@ -340,6 +341,24 @@
             fetchEmployeeNames();
             fetchLeaveTypes();
 
+            // Fetch holidays from the API
+            function fetchHolidays() {
+                $.ajax({
+                    url: 'http://localhost:8000/api/display_holidays',
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.status === 200) {
+                            holidays = response.Holidays.map(holiday => holiday.holiday_date);
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to fetch holidays');
+                    }
+                });
+            }
+
+            fetchHolidays();
+
             // Attach event listeners to update session dropdown when dates change
             $('#from_date').on('change', function() {
                 updateSessionDropdown();
@@ -349,23 +368,35 @@
                 updateSessionDropdown();
             });
 
-            const picker = document.getElementById('from_date');
-            picker.addEventListener('input', function(e) {
-                var day = new Date(this.value).getUTCDay();
-                if ([6, 0].includes(day)) {
-                    e.preventDefault();
-                    this.value = '';
-                    alert('Weekends not allowed');
+            const picker1 = document.getElementById('from_date');
+            picker1.addEventListener('change', function(e) {
+                if (this.value) {
+                    var day = new Date(this.value).getUTCDay();
+                    if ([6, 0].includes(day)) {
+                        e.preventDefault();
+                        this.value = '';
+                        alert('Weekends not allowed');
+                    } else if (holidays.includes(this.value)) {
+                        e.preventDefault();
+                        this.value = '';
+                        alert('Holidays not allowed');
+                    }
                 }
             });
 
             const picker2 = document.getElementById('to_date');
-            picker2.addEventListener('input', function(e) {
-                var day = new Date(this.value).getUTCDay();
-                if ([6, 0].includes(day)) {
-                    e.preventDefault();
-                    this.value = '';
-                    alert('Weekends not allowed');
+            picker2.addEventListener('change', function(e) {
+                if (this.value) {
+                    var day = new Date(this.value).getUTCDay();
+                    if ([6, 0].includes(day)) {
+                        e.preventDefault();
+                        this.value = '';
+                        alert('Weekends not allowed');
+                    } else if (holidays.includes(this.value)) {
+                        e.preventDefault();
+                        this.value = '';
+                        alert('Holidays not allowed');
+                    }
                 }
             });
 
@@ -399,7 +430,7 @@
                 // console.log(fromDate);
                 // console.log(today);
                 if (leaveType == 3) { // Maternity Leave
-                    minDate = fromDate
+                    minDate = fromDate;
                     maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 180);
                 } else {
                     minDate = fromDate;
@@ -494,6 +525,7 @@
                             $('#half').html(
                                 '<option value="">Select Half</option><option value="1st Half">1st Half</option><option value="2nd Half">2nd Half</option>'
                             );
+                            $('#half').prop('disabled', false);
                         } else {
                             console.error('Error submitting leave application:', response.error);
                         }

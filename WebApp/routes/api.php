@@ -15,6 +15,8 @@ use App\Http\Controllers\LeaveRejectController;
 use App\Http\Controllers\AdminMessageController;
 use App\Http\Controllers\EmployeeMessageController;
 use App\Http\Controllers\DisplayHolidays;
+use App\Http\Controllers\DisplayCompoffs;
+use App\Http\Controllers\CompoffApproval;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,6 +31,7 @@ Route::get('display_balance', [DisplayBalance::class, 'balance']);
 Route::get('leaves', [LeaveMasterController::class, 'leave_types']);
 Route::get('display_leaves', [LeaveApplicationDisplay::class, 'Leaves']);
 Route::get('display_holidays', [DisplayHolidays::class, 'holidays']);
+Route::get('display_compoffs', [DisplayCompoffs::class, 'display_compoffs']);
 
 // post api's
 Route::post('leave_application', [LeaveApplicationController::class, 'store']);
@@ -40,6 +43,18 @@ Route::prefix('leave')->group(function () {
 Route::prefix('leave')->group(function () {
     Route::post('/reject/{id}', [LeaveRejectController::class, 'reject'])->name('leave_reject');
 });
+
+Route::post('/update_compoff', [DisplayCompoffs::class, 'update_compoff']);
+
+// Compoff Approval
+// Compoff Approval
+Route::prefix('compoff')->group(function () {
+    Route::post('/approve/{id}', [CompoffApproval::class, 'approve'])->name('compoff_approve');
+    Route::post('/approve_multiple', [CompoffApproval::class, 'approveMultiple'])->name('compoff_approve_multiple');
+    Route::post('/reject/{id}', [CompoffApproval::class, 'reject'])->name('compoff_reject');
+    Route::post('/reject_multiple', [CompoffApproval::class, 'rejectMultiple'])->name('compoff_reject_multiple');
+});
+
 
 
 // Messages API's

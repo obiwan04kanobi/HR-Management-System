@@ -41,7 +41,7 @@
                             <a class="nav-link" href="/reset-password">Reset Password</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/compoff">Compulsory leave</a>
+                            <a class="nav-link" href="/compoff">Compoff Application</a>
                         </li>
                     </ul>
                     <form action="/logout" method="post" class="d-flex" role="search">
@@ -88,6 +88,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/leave_approve">Approve Leave</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/compoff_approve">Approve Compoff</a>
                         </li>
                     `);
                 } else {

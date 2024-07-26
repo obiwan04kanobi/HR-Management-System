@@ -308,3 +308,6 @@ CREATE TABLE department_master (
     // "session": "1st Half",
     "status": 1
 }
+
+INSERT INTO `attendance_masters`(`employee_id`, `punch_in`, `punch_out`, `date`) VALUES
+(6,'9:00:00]','19:00:00','2024-07-17');

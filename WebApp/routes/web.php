@@ -58,5 +58,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/compoff', function () {
         return view('compoff_from');
     });
+
+    Route::get('/compoff_approve', function () {
+        return view('compoff_approve');
+    });
     
 });

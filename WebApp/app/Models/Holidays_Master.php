@@ -16,5 +16,6 @@ class Holidays_Master extends Model
         'holiday_id',
         'holiday_name',
         'holiday_date',
+        'attendance_id',
     ];
 }
