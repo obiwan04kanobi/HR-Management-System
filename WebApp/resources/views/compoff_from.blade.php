@@ -67,7 +67,7 @@
                 $('#confirmApply').off('click').on('click',
             function() { // Ensure event handler is not attached multiple times
                     $.ajax({
-                        url: 'http://localhost:8000/api/update_compoff',
+                        url: 'http://15.207.178.108:8000/api/update_compoff',
                         type: 'POST',
                         dataType: 'json',
                         data: {
@@ -89,7 +89,7 @@
 
             async function fetchCompoffs() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_compoffs',
+                    url: 'http://15.207.178.108:8000/api/display_compoffs',
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
@@ -132,7 +132,7 @@
 
             function fetchHolidaysAndLeaveDates() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_holidays',
+                    url: 'http://15.207.178.108:8000/api/display_holidays',
                     method: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -145,7 +145,7 @@
                 });
 
                 $.ajax({
-                    url: 'http://localhost:8000/api/filter_employees',
+                    url: 'http://15.207.178.108:8000/api/filter_employees',
                     method: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -257,7 +257,7 @@
                 const remarks = row.find(`input[name="remarks_${compoffId}"]`).val();
 
                 $.ajax({
-                    url: 'http://localhost:8000/api/update_compoff',
+                    url: 'http://15.207.178.108:8000/api/update_compoff',
                     type: 'POST',
                     dataType: 'json',
                     data: {

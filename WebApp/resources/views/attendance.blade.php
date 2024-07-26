@@ -50,7 +50,7 @@
             // Function to fetch employee names for dropdown
             function fetchEmployeeNames() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_employees',
+                    url: 'http://15.207.178.108:8000/api/display_employees',
                     type: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -89,7 +89,7 @@
                 var fromDate = $('#date_from').val();
                 var toDate = $('#date_to').val();
 
-                var url = 'http://localhost:8000/api/filter_employees';
+                var url = 'http://15.207.178.108:8000/api/filter_employees';
 
                 // Add logged-in user's ID as a filter criteria
                 var formData = {

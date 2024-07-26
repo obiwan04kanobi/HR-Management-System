@@ -83,7 +83,7 @@
 
             function fetchEmployeeNames() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_employees',
+                    url: 'http://15.207.178.108:8000/api/display_employees',
                     type: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -119,7 +119,7 @@
             // Function to fetch leave types for dropdown
             function fetchLeaveTypes() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/leaves',
+                    url: 'http://15.207.178.108:8000/api/leaves',
                     type: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -159,7 +159,7 @@
                 }
 
                 $.ajax({
-                    url: 'http://localhost:8000/api/filter_employees',
+                    url: 'http://15.207.178.108:8000/api/filter_employees',
                     type: 'GET',
                     data: {
                         employee_id: employeeId,
@@ -344,7 +344,7 @@
             // Fetch holidays from the API
             function fetchHolidays() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_holidays',
+                    url: 'http://15.207.178.108:8000/api/display_holidays',
                     method: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -508,7 +508,7 @@
                 console.log('Form data:', formData); // Debugging
 
                 $.ajax({
-                    url: 'http://localhost:8000/api/leave_application',
+                    url: 'http://15.207.178.108:8000/api/leave_application',
                     type: 'POST',
                     data: formData,
                     headers: {

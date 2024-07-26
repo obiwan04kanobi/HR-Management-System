@@ -81,7 +81,7 @@
             // Function to fetch employee names for dropdown
             function fetchEmployeeNames() {
                 $.ajax({
-                    url: 'http://localhost:8000/api/display_employees',
+                    url: 'http://15.207.178.108:8000/api/display_employees',
                     type: 'GET',
                     success: function(response) {
                         if (response.status === 200) {
@@ -117,7 +117,7 @@
                 var formData = $('#filterForm').serialize();
 
                 $.ajax({
-                    url: 'http://localhost:8000/api/filter_employees',
+                    url: 'http://15.207.178.108:8000/api/filter_employees',
                     type: 'GET',
                     data: formData,
                     success: function(response) {
@@ -213,7 +213,7 @@
                     _token: "{{ csrf_token() }}"
                 });
 
-                fetch(`http://localhost:8000/api/send_message`, {
+                fetch(`http://15.207.178.108:8000/api/send_message`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -255,7 +255,7 @@
 
             // Check if the logged-in user is an admin
             $.ajax({
-                url: 'http://localhost:8000/api/display_employees',
+                url: 'http://15.207.178.108:8000/api/display_employees',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {

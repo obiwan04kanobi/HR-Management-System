@@ -71,7 +71,7 @@
 
         // Check if the logged-in user is an admin
         $.ajax({
-            url: 'http://localhost:8000/api/display_employees',
+            url: 'http://15.207.178.108:8000/api/display_employees',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
@@ -114,7 +114,7 @@
 
         // Check if the logged-in user is an admin
         $.ajax({
-            url: 'http://localhost:8000/api/display_employees',
+            url: 'http://15.207.178.108:8000/api/display_employees',
             type: 'GET',
             dataType: 'json',
             success: function(data) {
@@ -127,7 +127,7 @@
                     // Function to fetch and display messages
                     function fetchMessages() {
                         $.ajax({
-                            url: 'http://localhost:8000/api/display_admin_messages',
+                            url: 'http://15.207.178.108:8000/api/display_admin_messages',
                             method: 'GET',
                             dataType: 'json',
                             success: function(response) {
@@ -173,7 +173,7 @@
                     // Function to fetch and display messages
                     function fetchMessages() {
                         $.ajax({
-                            url: 'http://localhost:8000/api/display_emp_messages',
+                            url: 'http://15.207.178.108:8000/api/display_emp_messages',
                             method: 'GET',
                             dataType: 'json',
                             success: function(response) {
