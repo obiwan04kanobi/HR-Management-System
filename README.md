@@ -6,8 +6,7 @@ The **MyLava Employee Management System** is a web application designed to manag
 
 
 ## 📺 Video Demo
-[Screencast from 16-07-24 04:57:02 PM IST.webm](https://github.com/user-attachments/assets/b083e879-245c-4cb0-8545-0f7e70110639)
-
+[Screencast from 16-07-24 04:57:02 PM IST.webm](https://github.com/user-attachments/assets/01a7ff56-65b3-4fe1-90cd-71d3c43c813a)
 
 ## ✨ Features
 
