@@ -1,8 +1,8 @@
-# 💼 MyLava Employee Management System
+# 💼 MyLava (Employee Management System)
  
 ## 📜 Overview
 
-The **MyLava Employee Management System** is a web application designed to manage employee attendance, leave applications, and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap and jQuery for the frontend.
+The **MyLava (Employee Management System)** is a web application designed to manage employee attendance, leave applications, admin messages and approvals. It offers a user-friendly interface with distinct functionalities for both employees and administrators. This system is built using Laravel for the backend, with Bootstrap5 and jQuery for the frontend.
 
 
 ## 📺 Video Demo
@@ -15,8 +15,8 @@ The **MyLava Employee Management System** is a web application designed to manag
 - **Attendance Tracking**: Employees can view and manage their attendance records.
 - **Leave Application**: Employees can apply for leave, specifying the type and duration.
 - **Password Reset**: Users can reset their passwords if forgotten.
-- **Messages**: Employees can give reply to messages from admin. Employees cannot send messages to admin & other employees.
-- **Compulsory leave**: Users can apply for compulsory leave. Admin can approve or reject the compulsory leave.
+- **Messages**: Employees can give reply to messages from admin. Employees cannot send direct messages to admin & other employees.
+- **Compensatory Leave**: Users can apply for compensatory leaves. Compoffs generate automatically based on attendance, if the employee is working on a holiday then a compoff will generate for them which can be used later to writeoff a previous leave or take a leave which will not be deducted from the employee's leave balance.
 
 ### Admin Features
 
@@ -24,6 +24,7 @@ The **MyLava Employee Management System** is a web application designed to manag
 - **Leave Approval**: Admins can view and approve leave applications submitted by employees who report to them.
 - **Apply Leave for Employees**: Admins can apply leave on behalf of their reporting employees.
 - **Messages**: Admins can send messages to employees for a particular date from Admin Attendance.
+- **Compensatory Leave Approval**: Admins can Approve/Reject compensatory leaves applied by employees.
 ---
 
 ## 💻 Technologies Used 
