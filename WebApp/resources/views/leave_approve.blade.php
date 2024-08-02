@@ -87,7 +87,7 @@
             // Handle approval confirmation
             $('#confirmApprove').on('click', function() {
                 const promises = application_ids.map(id => {
-                    return fetch(`http://15.207.178.108:8000/api/leave/approve/${id}`, {
+                    return fetch(`http://localhost:8000/api/leave/approve/${id}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -130,7 +130,7 @@
             // Handle rejection confirmation
             $('#confirmReject').on('click', function() {
                 const promises = application_ids.map(id => {
-                    return fetch(`http://15.207.178.108:8000/api/leave/reject/${id}`, {
+                    return fetch(`http://localhost:8000/api/leave/reject/${id}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -173,7 +173,7 @@
 
             // Check if the logged-in user is an admin or their report_to is null
             $.ajax({
-                url: 'http://15.207.178.108:8000/api/display_employees',
+                url: 'http://localhost:8000/api/display_employees',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -190,7 +190,7 @@
 
                     // Fetch leave applications if the user is an admin or their report_to is null
                     $.ajax({
-                        url: 'http://15.207.178.108:8000/api/display_leaves',
+                        url: 'http://localhost:8000/api/display_leaves',
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {

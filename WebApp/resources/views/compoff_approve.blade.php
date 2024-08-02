@@ -80,7 +80,7 @@
 
             $('#confirmApprove').off('click').on('click', function() {
                 const promises = application_ids.map(id => {
-                    return fetch(`http://15.207.178.108:8000/api/compoff/approve/${id}`, {
+                    return fetch(`http://localhost:8000/api/compoff/approve/${id}`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -114,7 +114,7 @@
 
             $('#confirmReject').off('click').on('click', function() {
                 const promises = application_ids.map(id => {
-                    return fetch(`http://15.207.178.108:8000/api/compoff/reject/${id}`, {
+                    return fetch(`http://localhost:8000/api/compoff/reject/${id}`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -148,7 +148,7 @@
             const loggedInUserReportTo = {{ Auth::user()->report_to ?? 'null' }};
 
             $.ajax({
-                url: 'http://15.207.178.108:8000/api/display_employees',
+                url: 'http://localhost:8000/api/display_employees',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -164,7 +164,7 @@
                     }
 
                     $.ajax({
-                        url: 'http://15.207.178.108:8000/api/display_compoffs',
+                        url: 'http://localhost:8000/api/display_compoffs',
                         type: 'GET',
                         dataType: 'json',
                         success: function(data) {

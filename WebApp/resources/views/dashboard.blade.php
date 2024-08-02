@@ -85,7 +85,7 @@
             async function fetchEmployeeData() {
                 try {
                     const response = await $.ajax({
-                        url: 'http://15.207.178.108:8000/api/display_employees',
+                        url: 'http://localhost:8000/api/display_employees',
                         method: 'GET',
                         dataType: 'json'
                     });
@@ -116,7 +116,7 @@
 
             // Check if the logged-in user is an admin
             $.ajax({
-                url: 'http://15.207.178.108:8000/api/display_employees',
+                url: 'http://localhost:8000/api/display_employees',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -140,13 +140,13 @@
                     let response;
                     if (loggedinAdmin === 1) {
                         response = await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/display_admin_messages',
+                            url: 'http://localhost:8000/api/display_admin_messages',
                             method: 'GET',
                             dataType: 'json'
                         });
                     } else if (loggedinAdmin === 0) {
                         response = await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/display_emp_messages',
+                            url: 'http://localhost:8000/api/display_emp_messages',
                             method: 'GET',
                             dataType: 'json'
                         });
@@ -242,7 +242,7 @@
                     if (loggedinAdmin === 1) {
                         console.log(`${currentMessageID}+${messageFrom}+${currentAttendanceID}`);
                         await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/update_message_status',
+                            url: 'http://localhost:8000/api/update_message_status',
                             method: 'POST',
                             data: {
                                 message_id: globalparentID,
@@ -253,7 +253,7 @@
                     } else if (loggedinAdmin === 0) {
                         console.log(`${currentMessageID}+${messageFrom}+${currentAttendanceID}`);
                         await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/emp_update_message_status',
+                            url: 'http://localhost:8000/api/emp_update_message_status',
                             method: 'POST',
                             data: {
                                 employee_message_id: currentMessageID,
@@ -277,13 +277,13 @@
                     let response;
                     if (loggedinAdmin === 1) {
                         response = await $.ajax({
-                            url: `http://15.207.178.108:8000/api/display_thread_messages/${parentId}`,
+                            url: `http://localhost:8000/api/display_thread_messages/${parentId}`,
                             method: 'GET',
                             dataType: 'json'
                         });
                     } else if (loggedinAdmin === 0) {
                         response = await $.ajax({
-                            url: `http://15.207.178.108:8000/api/emp_display_thread_messages/${parentId}`,
+                            url: `http://localhost:8000/api/emp_display_thread_messages/${parentId}`,
                             method: 'GET',
                             dataType: 'json'
                         });
@@ -326,8 +326,8 @@
                 try {
                     let response;
                     const url = loggedinAdmin === 1 ?
-                        'http://15.207.178.108:8000/api/send_reply' :
-                        'http://15.207.178.108:8000/api/emp_send_reply';
+                        'http://localhost:8000/api/send_reply' :
+                        'http://localhost:8000/api/emp_send_reply';
 
                     console.log(`Sending request to: ${url}`); // Debug URL
                     console.log(`parentID: ${globalparentID}`);
@@ -369,7 +369,7 @@
                 try {
                     if (loggedinAdmin === 1) {
                         await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/clear_messages',
+                            url: 'http://localhost:8000/api/clear_messages',
                             method: 'POST',
                             data: {
                                 message_to: loggedInUserId,
@@ -378,7 +378,7 @@
                         });
                     } else if (loggedinAdmin === 0) {
                         await $.ajax({
-                            url: 'http://15.207.178.108:8000/api/emp_clear_messages',
+                            url: 'http://localhost:8000/api/emp_clear_messages',
                             method: 'POST',
                             data: {
                                 message_to: loggedInUserId,
